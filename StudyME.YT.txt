@@ -1,0 +1,6 @@
+php ./bin/console 
+
+https://www.youtube.com/watch?v=mpGy7VPir3E&t=134s
+
+
+
