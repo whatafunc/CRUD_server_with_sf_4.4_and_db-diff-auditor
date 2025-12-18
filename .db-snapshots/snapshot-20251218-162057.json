@@ -1,0 +1,64 @@
+{
+    "schema": {
+        "version": "1.0",
+        "timestamp": "2025-12-18 16:20:57",
+        "driver": "mysql",
+        "tables": {
+            "users": {
+                "columns": [
+                    {
+                        "Field": "id",
+                        "Type": "int",
+                        "Null": "NO",
+                        "Key": "PRI",
+                        "Default": null,
+                        "Extra": "auto_increment"
+                    },
+                    {
+                        "Field": "username",
+                        "Type": "varchar(255)",
+                        "Null": "NO",
+                        "Key": "UNI",
+                        "Default": null,
+                        "Extra": ""
+                    },
+                    {
+                        "Field": "email",
+                        "Type": "varchar(255)",
+                        "Null": "NO",
+                        "Key": "UNI",
+                        "Default": null,
+                        "Extra": ""
+                    }
+                ],
+                "indexes": [
+                    {
+                        "name": "PRIMARY",
+                        "columns": [
+                            "id"
+                        ],
+                        "unique": true
+                    },
+                    {
+                        "name": "username",
+                        "columns": [
+                            "username"
+                        ],
+                        "unique": true
+                    },
+                    {
+                        "name": "email",
+                        "columns": [
+                            "email"
+                        ],
+                        "unique": true
+                    }
+                ],
+                "foreign_keys": [],
+                "create_sql": "CREATE TABLE `users` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `username` (`username`),\n  UNIQUE KEY `email` (`email`)\n) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+            }
+        }
+    },
+    "message": "Manual snapshot",
+    "created_at": "2025-12-18 16:20:57"
+}

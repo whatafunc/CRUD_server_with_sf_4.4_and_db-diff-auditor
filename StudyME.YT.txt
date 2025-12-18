@@ -1,6 +1,33 @@
 php ./bin/console 
+php bin/console cache:clear
 
-https://www.youtube.com/watch?v=mpGy7VPir3E&t=134s
+│ php bin/console doctrine:query:sql "SELECT 1"                                        │
 
 
 
+
+curl -X POST http://symf_skel_44.local/api/users \
+     -H "Content-Type: application/json" \
+   -d '{"username": "user4", "email": "user4@example.com"}'
+
+
+curl -X GET http://symf_skel_44.local/api/users \
+  -H "Content-Type: application/json" 
+ 
+
+
+
+vendor/bin/db-diff db:check
+
+vendor/bin/db-diff db:compare-last
+🧾 Comparing last two snapshots...
+⚠️  Differences found between snapshots:
+  [create_table] users
+  CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

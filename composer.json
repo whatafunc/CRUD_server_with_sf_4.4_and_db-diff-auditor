@@ -8,8 +8,8 @@
         "doctrine/doctrine-bundle": "^2.7",
         "doctrine/doctrine-migrations-bundle": "*",
         "doctrine/orm": "^2.20",
-        "friendsofsymfony/rest-bundle": "*",
-        "jms/serializer-bundle": "*",
+        "friendsofsymfony/rest-bundle": "^2.8",
+        "jms/serializer-bundle": "^3.0",
         "sensio/framework-extra-bundle": "*",
         "symfony/console": "4.4.*",
         "symfony/dotenv": "4.4.*",
@@ -69,5 +69,8 @@
             "require": "4.4.*",
             "docker": true
         }
+    },
+    "require-dev": {
+        "symfony/maker-bundle": "~1.30"
     }
 }
