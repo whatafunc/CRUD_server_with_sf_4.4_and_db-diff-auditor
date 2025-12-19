@@ -6,16 +6,108 @@ php bin/console cache:clear
 
 
 
-curl -X POST http://symf_skel_44.local/api/users \
+time curl -X POST http://symf_skel_44.local/api/users \
      -H "Content-Type: application/json" \
-   -d '{"username": "user4", "email": "user4@example.com"}'
+   -d '{"username": "user6", "email": "user6@example.com"}'
+real    0m1.248s
+user    0m0.017s
+sys     0m0.021s
 
-
-curl -X GET http://symf_skel_44.local/api/users \
+time curl -X GET http://symf_skel_44.local/api/users \
   -H "Content-Type: application/json" 
  
+real    0m1.160s
+user    0m0.013s
+sys     0m0.018s
 
 
+curl -o /dev/null -s -w 'DNS: %{time_namelookup}s | Connect: %{time_connect}s | TTFB: %{time_starttransfer}s | Total: %{time_total}s\n' http://symf_skel_44.local/api/users
+DNS: 0.009499s | Connect: 0.009713s | TTFB: 1.176946s | Total: 1.177043s
+
+This data is very helpful. It confirms that your network and DNS are not the problem.The TTFB (Time to First Byte) of 1.176s means your computer is waiting over a second for Symfony to "think" before it sends back a single character. In a local environment, your TTFB should ideally be under 0.100s (100ms).
+Since the delay is happening entirely inside the PHP/Symfony execution phase, here are the most likely reasons:1. The Xdebug "Timeout" (Most Likely)
+If you have the Xdebug extension enabled, it might be trying to connect to your IDE (like VS Code or PhpStorm) to start a debugging session. 
+
+
+time curl -X POST http://symf_skel_44.test/api/users      -H "Content-Type: application/json"    -d '{"username": "user8", "email": "user8@example.com"}'
+{"id":8,"username":"user8","email":"user8@example.com"}
+real    0m0.446s
+user    0m0.017s
+sys     0m0.018s
+
+time curl -X GET http://symf_skel_44.test/api/users   -H "Content-Type: application/json" 
+[{"id":1,"username":"user4","email":"user4@example.com"},{"id":4,"username":"user1","email":"user1@example.com"},{"id":5,"username":"user5","email":"user5@example.com"},{"id":6,"username":"user7","email":"user7@example.com"},{"id":8,"username":"user8","email":"user8@example.com"}]
+real    0m0.276s
+user    0m0.013s
+sys     0m0.017s
+MacBook-Pro-Dmitry:symfony_skeleton_4_4 mdx$ curl -o /dev/null -s -w 'DNS: %{time_namelookup}s | Connect: %{time_connect}s | TTFB: %{time_starttransfer}s | Total: %{time_total}s\n' http://symf_skel_44.test/api/users
+DNS: 0.015239s | Connect: 0.015482s | TTFB: 0.556175s | Total: 0.556305s
+
+
+=============================
+stage 2: 
+
+This creates a class map so PHP knows exactly where every file is.
+composer dump-autoload -o
+Generating optimized autoload files
+Generated optimized autoload files containing 4025 classes
+
+
+composer dump-autoload -o --classmap-authoritative
+time curl -X GET http://localhost:8081/api/users   -H "Content-Type: application/json" 
+[{"id":1,"username":"user4","email":"user4@example.com"},{"id":4,"username":"user1","email":"user1@example.com"},{"id":5,"username":"user5","email":"user5@example.com"},{"id":6,"username":"user7","email":"user7@example.com"},{"id":8,"username":"user8","email":"user8@example.com"},{"id":9,"username":"user9","email":"user9@example.com"},{"id":10,"username":"user91","email":"user91@example.com"},{"id":11,"username":"user911","email":"user911@example.com"}]
+real    0m0.474s
+user    0m0.015s
+sys     0m0.019s
+MacBook-Pro-Dmitry:symfony_skeleton_4_4 mdx$ time curl -X POST http://localhost:8081/api/users      -H "Content-Type: application/json"    -d '{"username": "user912", "email": "user912@example.com"}'
+{"id":12,"username":"user912","email":"user912@example.com"}
+real    0m0.345s
+user    0m0.015s
+sys     0m0.016s
+MacBook-Pro-Dmitry:symfony_skeleton_4_4 mdx$ curl -o /dev/null -s -w 'DNS: %{time_namelookup}s | Connect: %{time_connect}s | TTFB: %{time_starttransfer}s | Total: %{time_total}s\n' http://localhost:8081/api/users
+DNS: 0.007705s | Connect: 0.008173s | TTFB: 0.186687s | Total: 0.187663s
+
+Final "Peace of Mind" Checklist
+Don't Forget: Since you are using --classmap-authoritative, if you add a new file or a new Controller, it will not work until you run composer dump-autoload again.
+
+Ensure you are running in prod mode and the cache is warm:
+APP_ENV=prod php bin/console cache:warmup
+
+In your .env, add ?persistent=1 to the end of your DATABASE_URL.
+
+curl -X GET http://localhost:8081/api/users   -H "Content-Type: application/json" 
+[{"id":1,"username":"user4","email":"user4@example.com"},{"id":4,"username":"user1","email":"user1@example.com"},{"id":5,"username":"user5","email":"user5@example.com"},{"id":6,"username":"user7","email":"user7@example.com"},{"id":8,"username":"user8","email":"user8@example.com"},{"id":9,"username":"user9","email":"user9@example.com"}]
+real    0m0.233s
+user    0m0.013s
+sys     0m0.015s
+MacBook-Pro-Dmitry:symfony_skeleton_4_4 mdx$ time curl -X POST http://localhost:8081/api/users      -H "Content-Type: application/json"    -d '{"username": 
+"user91", "email": "user91@example.com"}'
+{"id":10,"username":"user91","email":"user91@example.com"}
+real    0m0.409s
+user    0m0.017s
+sys     0m0.017s
+MacBook-Pro-Dmitry:symfony_skeleton_4_4 mdx$ curl -o /dev/null -s -w 'DNS: %{time_namelookup}s | Connect: %{time_connect}s | TTFB: %{time_starttransfer}s | Total: %{time_total}s\n' http://localhost:8081/api/users
+DNS: 0.008279s | Connect: 0.008936s | TTFB: 0.193320s | Total: 0.194501s
+===========
+
+If you apply the optimizations above, here is what your response times should look like:
+
+Go (CRUD API): 2ms – 10ms
+
+Symfony (Optimized Prod): 40ms – 80ms
+
+Your Current Result: 276ms (Still "Heavy")
+
+Your Starting Result: 1,150ms (Painfully slow)
+
+
+I recently revalidated Symfony performance by deploying a 4.4 app from scratch.
+Initial response time was over 1s in dev-like conditions, but after proper production configuration, OPcache, DB tuning, and cache warmup, I reduced it to sub-300ms, with a clear path to ~80ms.
+
+It reinforced how critical environment configuration is for PHP performance.
+
+ 
+================================
 
 vendor/bin/db-diff db:check
 
